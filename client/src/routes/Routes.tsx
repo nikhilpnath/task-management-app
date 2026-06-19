@@ -4,13 +4,16 @@ import MainLayout from "@/layout/MainLayout";
 import AuthLayout from "@/layout/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
 
-import LoginPage from "@/pages/LoginPage";
-import RegisterPage from "@/pages/RegisterPage";
-import DashboardPage from "@/pages/DashboardPage";
-import TasksPage from "@/pages/TasksPage";
-import CreateTaskPage from "@/pages/CreateTaskPage";
-import EditTaskPage from "@/pages/EditTaskPage";
-import NoRoute from "@/pages/NoRoute";
+import { lazyLoad } from "./LazyLoading";
+
+// Lazy loaded page components
+const LoginPage = lazyLoad("LoginPage");
+const RegisterPage = lazyLoad("RegisterPage");
+const DashboardPage = lazyLoad("DashboardPage");
+const TasksPage = lazyLoad("TasksPage");
+const CreateTaskPage = lazyLoad("CreateTaskPage");
+const EditTaskPage = lazyLoad("EditTaskPage");
+const NoRoute = lazyLoad("NoRoute");
 
 // Helper component to redirect authenticated users away from auth pages
 const LoginOrRedirect = () => {
