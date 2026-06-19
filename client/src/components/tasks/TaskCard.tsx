@@ -9,7 +9,7 @@ interface TaskCardProps {
   onStatusChange: (task: Task, newStatus: 'todo' | 'in-progress' | 'done') => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDeleteClick, onStatusChange }) => {
+const TaskCard: React.FC<TaskCardProps> = React.memo(({ task, onEdit, onDeleteClick, onStatusChange }) => {
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const isOverdue = task.dueDate && task.dueDate < todayStr;
@@ -73,6 +73,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDeleteClick, onStat
       </div>
     </div>
   );
-};
+});
 
 export default TaskCard;

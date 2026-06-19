@@ -39,43 +39,49 @@ const TasksPage: React.FC = () => {
     dispatch(updateTask({ ...task, status: newStatus }));
   };
 
-  // 1. Filter by logged-in user (case-insensitive)
-  let processedTasks = tasks.filter(
-    (t) => t.createdBy.toLowerCase() === user?.email?.toLowerCase()
-  );
+  // 1. Filter and sort tasks (memoized)
+  const processedTasks = React.useMemo(() => {
+    let filtered = tasks.filter(
+      (t) => t.createdBy.toLowerCase() === user?.email?.toLowerCase()
+    );
 
-  // 2. Filter by priority
-  if (priorityFilter !== 'all') {
-    processedTasks = processedTasks.filter((t) => t.priority === priorityFilter);
-  }
-
-  // 3. Sort tasks
-  processedTasks = [...processedTasks].sort((a, b) => {
-    if (sortBy === 'dueDate-asc') {
-      if (!a.dueDate) return 1;
-      if (!b.dueDate) return -1;
-      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+    if (priorityFilter !== 'all') {
+      filtered = filtered.filter((t) => t.priority === priorityFilter);
     }
-    if (sortBy === 'dueDate-desc') {
-      if (!a.dueDate) return 1;
-      if (!b.dueDate) return -1;
-      return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
-    }
-    if (sortBy === 'createdAt-asc') {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    }
-    // Default: 'createdAt-desc'
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
 
-  // Group tasks by status for columns
-  const todoTasks = processedTasks.filter((t) => t.status === 'todo');
-  const inProgressTasks = processedTasks.filter((t) => t.status === 'in-progress');
-  const doneTasks = processedTasks.filter((t) => t.status === 'done');
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'dueDate-asc') {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      }
+      if (sortBy === 'dueDate-desc') {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+      }
+      if (sortBy === 'createdAt-asc') {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      }
+      // Default: 'createdAt-desc'
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  }, [tasks, user?.email, priorityFilter, sortBy]);
 
-  // Calculate project progress based on all tasks of this user
-  const userTasksCount = tasks.filter((t) => t.createdBy.toLowerCase() === user?.email?.toLowerCase()).length;
-  const userCompletedCount = tasks.filter((t) => t.createdBy.toLowerCase() === user?.email?.toLowerCase() && t.status === 'done').length;
+  // Group tasks by status for columns (memoized)
+  const todoTasks = React.useMemo(() => processedTasks.filter((t) => t.status === 'todo'), [processedTasks]);
+  const inProgressTasks = React.useMemo(() => processedTasks.filter((t) => t.status === 'in-progress'), [processedTasks]);
+  const doneTasks = React.useMemo(() => processedTasks.filter((t) => t.status === 'done'), [processedTasks]);
+
+  // Calculate project progress based on all tasks of this user (memoized)
+  const { userTasksCount, userCompletedCount } = React.useMemo(() => {
+    const userTasks = tasks.filter((t) => t.createdBy.toLowerCase() === user?.email?.toLowerCase());
+    return {
+      userTasksCount: userTasks.length,
+      userCompletedCount: userTasks.filter((t) => t.status === 'done').length,
+    };
+  }, [tasks, user?.email]);
+
   const progressPercent = userTasksCount > 0 ? Math.round((userCompletedCount / userTasksCount) * 100) : 0;
 
   return (
