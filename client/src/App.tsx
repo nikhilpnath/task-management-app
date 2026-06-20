@@ -6,6 +6,8 @@ import { router } from "./routes/Routes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { login, logout } from "./store/slices/authSlice";
 import { apiFetch } from "./api/client";
+import ErrorBoundary from "./components/common/ErrorBoundary";
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,7 +52,9 @@ const App = () => {
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <AuthInit>
-          <RouterProvider router={router} />
+          <ErrorBoundary>
+            <RouterProvider router={router} />
+          </ErrorBoundary>
         </AuthInit>
       </QueryClientProvider>
     </Provider>

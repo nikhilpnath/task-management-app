@@ -4,6 +4,8 @@ import { useAppSelector } from "@/store/store";
 import MainLayout from "@/layout/MainLayout";
 import AuthLayout from "@/layout/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import RouterErrorBoundary from "@/components/common/RouterErrorBoundary";
+
 
 import { lazyLoad } from "./LazyLoading";
 
@@ -29,50 +31,55 @@ const RegisterOrRedirect = () => {
 
 export const router = createBrowserRouter([
   {
-    element: <AuthLayout />,
+    ErrorBoundary: RouterErrorBoundary,
     children: [
       {
-        path: "/",
-        element: <LoginOrRedirect />,
-      },
-      {
-        path: "/login",
-        element: <Navigate to="/" replace />,
-      },
-      {
-        path: "/register",
-        element: <RegisterOrRedirect />,
-      },
-    ],
-  },
-  {
-    element: <ProtectedRoute />,
-    children: [
-      {
-        element: <MainLayout />,
+        element: <AuthLayout />,
         children: [
           {
-            path: "/dashboard",
-            element: <DashboardPage />,
+            path: "/",
+            element: <LoginOrRedirect />,
           },
           {
-            path: "/tasks",
-            element: <TasksPage />,
+            path: "/login",
+            element: <Navigate to="/" replace />,
           },
           {
-            path: "/tasks/new",
-            element: <CreateTaskPage />,
-          },
-          {
-            path: "/tasks/:taskId/edit", 
-            element: <EditTaskPage />,
+            path: "/register",
+            element: <RegisterOrRedirect />,
           },
         ],
       },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            element: <MainLayout />,
+            children: [
+              {
+                path: "/dashboard",
+                element: <DashboardPage />,
+              },
+              {
+                path: "/tasks",
+                element: <TasksPage />,
+              },
+              {
+                path: "/tasks/new",
+                element: <CreateTaskPage />,
+              },
+              {
+                path: "/tasks/:taskId/edit", 
+                element: <EditTaskPage />,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: "*",
+        element: <NoRoute />,
+      },
     ],
-  },
-  {
-    path: "*",
-    element: <NoRoute />,
   },
 ]);
