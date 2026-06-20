@@ -126,3 +126,21 @@ FlowBoard uses a stateless, token-based session model using **JSON Web Tokens (J
 ### 3. Task Creator linked by Email vs. ObjectId
 *   **Trade-off:** We store `createdBy` on tasks as the user's email address.
 *   **Consequence:** This eliminates the need to run database population/join steps to display user email addresses in client layouts. However, if a user updates their email address, we must cascade updates across all associated tasks, which would not be necessary if using immutable `ObjectIds`.
+
+---
+
+## 📦 External Libraries & Dependencies
+
+We utilize several external libraries to improve stability, security, and developer experience. Below are the key packages and the rationale for choosing them:
+
+### Frontend (Client)
+*   **TanStack Query (`@tanstack/react-query`):** Manages server-state synchronization. Unlike traditional state management libraries (like raw Redux or Context API), TanStack Query handles caching, background fetching, automatic retries, and data synchronization out of the box, reducing client boilerplate code.
+*   **Redux Toolkit (`@reduxjs/toolkit`):** Manages client-only global state (e.g., whether the user is logged in, sidebar toggles). Chosen for standard client-state organization with minimal boilerplate.
+*   **TailwindCSS v4 & `@tailwindcss/vite`:** Utility-first CSS framework coupled with Vite compiler integration. This choice enables high-performance styles compiled natively during building.
+*   **React Hook Form & Zod:** Managing forms using traditional state triggers cause massive re-renders. We choose `react-hook-form` to track uncontrolled inputs for speed, and `zod` for type-safe schema declarations that validate form schemas dynamically.
+
+### Backend (Server)
+*   **Helmet (`helmet`):** Secures HTTP response headers. By altering response headers (like disabling `X-Powered-By` and setting strict referrer policies), it prevents basic security disclosures.
+*   **Express Rate Limit (`express-rate-limit`):** Restricts requests to authentication endpoints. This helps mitigate brute-force and credential stuffing attacks on our user authentication endpoints.
+*   **Zod (`zod`):** Used in backend middlewares to validate incoming request bodies. This keeps API route controllers clean by failing requests early before hitting databases.
+*   **TSX (`tsx`):** A fast TypeScript runner. We use `tsx watch` during development to bypass manual `tsc` compilation loops, allowing the server to restart in milliseconds when files change.
