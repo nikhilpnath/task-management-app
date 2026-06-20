@@ -108,8 +108,8 @@ FlowBoard uses a stateless, token-based session model using **JSON Web Tokens (J
 
 ### Security Configurations:
 *   **HttpOnly:** Protects the token from being accessed or stolen by malicious client-side JavaScript (prevents XSS leaks).
-*   **SameSite=Lax:** Restricts cookie sharing in cross-site contexts (protects against CSRF).
-*   **Secure:** Set dynamically to `true` in production mode (requires HTTPS).
+*   **SameSite:** Configured dynamically to support cross-domain architectures. Set to `Lax` in local development to avoid localhost HTTPS requirements, and set to `None` in production to allow the browser to transmit cookies across different domains (e.g., Netlify client to Render API server).
+*   **Secure:** Set dynamically to `true` in production mode (required when `SameSite=None` is used).
 
 ---
 
