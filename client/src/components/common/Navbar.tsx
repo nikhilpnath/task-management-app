@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { logout } from '@/store/slices/authSlice';
+import { apiFetch } from '@/api/client';
 import ThemeToggle from './ThemeToggle';
 
 const Navbar: React.FC = () => {
@@ -13,7 +14,12 @@ const Navbar: React.FC = () => {
   // Mobile menu state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      await apiFetch('/auth/logout', { method: 'POST' });
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
     dispatch(logout());
     navigate('/');
   };

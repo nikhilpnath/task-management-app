@@ -1,9 +1,10 @@
 import { Navigate, Outlet } from "react-router";
+import { useAppSelector } from "@/store/store";
 
 const ProtectedRoute = () => {
-  // Simple check for presence of token in localStorage to guard routes.
-  // If not authenticated, redirect to /login.
-  const isAuthenticated = !!localStorage.getItem("token");
+  // Check Redux auth state to guard routes.
+  // If not authenticated, redirect to /login (which is "/" route).
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/" replace />;
 };

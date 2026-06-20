@@ -10,13 +10,17 @@ interface DecodedToken {
 }
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
+  let token: string | undefined;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return next(createError('Authorization token required. Access denied.', 401));
+  if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
   }
 
-  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return next(createError('Authorization token required. Access denied.', 401));
+  }
 
   try {
     const decoded = jwt.verify(token, env.JWT_SECRET) as DecodedToken;

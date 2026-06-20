@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router";
+import { useAppSelector } from "@/store/store";
 
 import MainLayout from "@/layout/MainLayout";
 import AuthLayout from "@/layout/AuthLayout";
@@ -17,12 +18,12 @@ const NoRoute = lazyLoad("NoRoute");
 
 // Helper component to redirect authenticated users away from auth pages
 const LoginOrRedirect = () => {
-  const isAuthenticated = !!localStorage.getItem("token");
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   return isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />;
 };
 
 const RegisterOrRedirect = () => {
-  const isAuthenticated = !!localStorage.getItem("token");
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   return isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage />;
 };
 

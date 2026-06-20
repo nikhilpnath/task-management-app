@@ -9,19 +9,15 @@ export const apiFetch = async <T = any>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> => {
-  const token = localStorage.getItem('token');
-  
   const headers = new Headers(options.headers);
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
-  }
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
   }
 
   const response = await fetch(`${BASE_URL}${path}`, {
     ...options,
     headers,
+    credentials: 'include',
   });
 
   let data: any;

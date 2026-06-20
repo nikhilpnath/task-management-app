@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { Task } from '@/api/tasksApi';
 import TaskPriorityBadge from './TaskPriorityBadge';
 
@@ -10,9 +10,26 @@ interface TaskCardProps {
 }
 
 const TaskCard: React.FC<TaskCardProps> = React.memo(({ task, onEdit, onDeleteClick, onStatusChange }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const isOverdue = task.dueDate && task.dueDate < todayStr;
+
+  useEffect(() => {
+    setIsExpanded(false);
+  }, [task.description]);
+
+  useEffect(() => {
+    const el = descriptionRef.current;
+    if (el) {
+      if (!isExpanded) {
+        setHasOverflow(el.scrollHeight > el.clientHeight);
+      }
+    }
+  }, [task.description, isExpanded]);
 
   return (
     <div className="group relative flex flex-col rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-4 hover:border-zinc-400 dark:hover:border-zinc-700 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/80 transition-all duration-200 shadow-sm text-zinc-900 dark:text-white">
@@ -22,9 +39,24 @@ const TaskCard: React.FC<TaskCardProps> = React.memo(({ task, onEdit, onDeleteCl
       </div>
 
       {task.description && (
-        <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2 line-clamp-2 leading-relaxed">
-          {task.description}
-        </p>
+        <div className="mt-2">
+          <p
+            ref={descriptionRef}
+            className={`text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed ${
+              isExpanded ? 'line-clamp-none' : 'line-clamp-3'
+            }`}
+          >
+            {task.description}
+          </p>
+          {hasOverflow && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 mt-1 focus:outline-none transition-colors"
+            >
+              {isExpanded ? 'Show Less' : 'Show More'}
+            </button>
+          )}
+        </div>
       )}
 
       {task.dueDate && task.dueDate.trim() !== '' && (

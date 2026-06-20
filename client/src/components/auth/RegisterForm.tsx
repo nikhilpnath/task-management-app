@@ -14,7 +14,7 @@ const RegisterForm: React.FC = () => {
   const onSubmit = async (data: AuthFormValues) => {
     setErrorMsg(null);
     try {
-      const res = await apiFetch<{ token: string; user: { name: string; email: string } }>('/auth/register', {
+      const res = await apiFetch<{ user: { name: string; email: string } }>('/auth/register', {
         method: 'POST',
         body: JSON.stringify({
           name: data.name,
@@ -25,7 +25,6 @@ const RegisterForm: React.FC = () => {
 
       dispatch(
         login({
-          token: res.token,
           user: res.user,
         })
       );
