@@ -1,12 +1,13 @@
 import React from 'react';
 import { useAppSelector } from '@/store/store';
+import { useTasks } from '@/hooks/useTasks';
 import SummaryCard from '@/components/dashboard/SummaryCard';
 import StatusOverview from '@/components/dashboard/StatusOverview';
 import TaskPriorityBadge from '@/components/tasks/TaskPriorityBadge';
 
 const DashboardPage: React.FC = () => {
-  const tasks = useAppSelector((state) => state.tasks.items);
   const { user } = useAppSelector((state) => state.auth);
+  const { data: tasks = [], isLoading, error } = useTasks();
 
   // Filter tasks belonging to the logged-in user (case-insensitive)
   const userTasks = tasks.filter(
@@ -30,6 +31,22 @@ const DashboardPage: React.FC = () => {
   const completedPercent = totalTasks > 0 ? Math.round((completedTasksCount / totalTasks) * 100) : 0;
   const inProgressPercent = totalTasks > 0 ? Math.round((inProgressTasksCount / totalTasks) * 100) : 0;
   const todoPercent = totalTasks > 0 ? Math.round((todoTasksCount / totalTasks) * 100) : 0;
+
+  if (isLoading) {
+    return (
+      <div className="p-6 flex justify-center items-center min-h-[300px]">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600/30 border-t-indigo-600" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 text-center text-rose-500">
+        Error loading dashboard metrics: {error.message}
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 transition-colors duration-200">

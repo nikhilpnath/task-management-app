@@ -1,24 +1,26 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { useAppDispatch, useAppSelector } from '@/store/store';
-import { deleteTask, updateTask } from '@/store/slices/tasksSlice';
-import type { Task } from '@/store/slices/tasksSlice';
+import { useAppSelector } from '@/store/store';
+import { useTasks, useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
+import type { Task } from '@/api/tasksApi';
 import TaskFilters from '@/components/tasks/TaskFilters';
 import TaskList from '@/components/tasks/TaskList';
 import DeleteTaskDialog from '@/components/tasks/DeleteTaskDialog';
 
 const TasksPage: React.FC = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const tasks = useAppSelector((state) => state.tasks.items);
   const { user } = useAppSelector((state) => state.auth);
+  
+  const { data: tasks = [], isLoading, error } = useTasks();
+  const { mutate: updateTask } = useUpdateTask();
+  const { mutate: deleteTask } = useDeleteTask();
 
-  const [taskToDelete, setTaskToDelete] = React.useState<string | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
   // Filters and Sorting State
-  const [statusFilter, setStatusFilter] = React.useState<'all' | 'todo' | 'in-progress' | 'done'>('all');
-  const [priorityFilter, setPriorityFilter] = React.useState<'all' | 'low' | 'medium' | 'high'>('all');
-  const [sortBy, setSortBy] = React.useState<'createdAt-desc' | 'createdAt-asc' | 'dueDate-asc' | 'dueDate-desc'>('createdAt-desc');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'todo' | 'in-progress' | 'done'>('all');
+  const [priorityFilter, setPriorityFilter] = useState<'all' | 'low' | 'medium' | 'high'>('all');
+  const [sortBy, setSortBy] = useState<'createdAt-desc' | 'createdAt-asc' | 'dueDate-asc' | 'dueDate-desc'>('createdAt-desc');
 
   const openDeleteModal = (id: string) => {
     setTaskToDelete(id);
@@ -30,17 +32,17 @@ const TasksPage: React.FC = () => {
 
   const confirmDelete = () => {
     if (taskToDelete) {
-      dispatch(deleteTask(taskToDelete));
+      deleteTask(taskToDelete);
       setTaskToDelete(null);
     }
   };
 
   const handleStatusChange = (task: Task, newStatus: 'todo' | 'in-progress' | 'done') => {
-    dispatch(updateTask({ ...task, status: newStatus }));
+    updateTask({ id: task.id, data: { status: newStatus } });
   };
 
   // 1. Filter and sort tasks (memoized)
-  const processedTasks = React.useMemo(() => {
+  const processedTasks = useMemo(() => {
     let filtered = tasks.filter(
       (t) => t.createdBy.toLowerCase() === user?.email?.toLowerCase()
     );
@@ -69,12 +71,12 @@ const TasksPage: React.FC = () => {
   }, [tasks, user?.email, priorityFilter, sortBy]);
 
   // Group tasks by status for columns (memoized)
-  const todoTasks = React.useMemo(() => processedTasks.filter((t) => t.status === 'todo'), [processedTasks]);
-  const inProgressTasks = React.useMemo(() => processedTasks.filter((t) => t.status === 'in-progress'), [processedTasks]);
-  const doneTasks = React.useMemo(() => processedTasks.filter((t) => t.status === 'done'), [processedTasks]);
+  const todoTasks = useMemo(() => processedTasks.filter((t) => t.status === 'todo'), [processedTasks]);
+  const inProgressTasks = useMemo(() => processedTasks.filter((t) => t.status === 'in-progress'), [processedTasks]);
+  const doneTasks = useMemo(() => processedTasks.filter((t) => t.status === 'done'), [processedTasks]);
 
   // Calculate project progress based on all tasks of this user (memoized)
-  const { userTasksCount, userCompletedCount } = React.useMemo(() => {
+  const { userTasksCount, userCompletedCount } = useMemo(() => {
     const userTasks = tasks.filter((t) => t.createdBy.toLowerCase() === user?.email?.toLowerCase());
     return {
       userTasksCount: userTasks.length,
@@ -83,6 +85,22 @@ const TasksPage: React.FC = () => {
   }, [tasks, user?.email]);
 
   const progressPercent = userTasksCount > 0 ? Math.round((userCompletedCount / userTasksCount) * 100) : 0;
+
+  if (isLoading) {
+    return (
+      <div className="p-6 flex justify-center items-center min-h-[300px]">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600/30 border-t-indigo-600" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 text-center text-rose-500">
+        Error loading tasks: {error.message}
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 transition-colors duration-200">

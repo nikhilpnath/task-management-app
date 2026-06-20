@@ -1,5 +1,5 @@
 import Task from '../models/Task';
-import { validateTask } from '../validators';
+import { validateTask, validateTaskUpdate } from '../validators';
 import { createError } from '../utils/errors';
 
 export const getTasksForUser = async (email: string) => {
@@ -26,7 +26,7 @@ export const createTaskForUser = async (body: any, email: string) => {
 };
 
 export const updateTaskForUser = async (id: string, body: any, email: string) => {
-  const { isValid, errors } = validateTask(body);
+  const { isValid, errors } = validateTaskUpdate(body);
   if (!isValid) {
     throw createError(errors.join(', '), 400);
   }
@@ -43,11 +43,13 @@ export const updateTaskForUser = async (id: string, body: any, email: string) =>
 
   const { title, description, priority, status, dueDate } = body;
 
-  task.title = title;
-  task.description = description;
-  task.priority = priority || task.priority;
-  task.status = status || task.status;
-  task.dueDate = dueDate ? new Date(dueDate) : undefined;
+  if (title !== undefined) task.title = title;
+  if (description !== undefined) task.description = description;
+  if (priority !== undefined) task.priority = priority;
+  if (status !== undefined) task.status = status;
+  if (dueDate !== undefined) {
+    task.dueDate = dueDate ? new Date(dueDate) : undefined;
+  }
 
   await task.save();
   return task;

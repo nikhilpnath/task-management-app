@@ -50,3 +50,14 @@ export const validateTask = (body: any) => {
   }
   return { isValid: true, errors: [] };
 };
+
+const taskUpdateSchema = taskSchema.partial();
+
+export const validateTaskUpdate = (body: any) => {
+  const result = taskUpdateSchema.safeParse(body);
+  if (!result.success) {
+    const errors = result.error.issues.map(issue => issue.message);
+    return { isValid: false, errors };
+  }
+  return { isValid: true, errors: [] };
+};

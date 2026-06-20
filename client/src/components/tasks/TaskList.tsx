@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Task } from '@/store/slices/tasksSlice';
+import type { Task } from '@/api/tasksApi';
 import TaskCard from './TaskCard';
 
 interface TaskListProps {

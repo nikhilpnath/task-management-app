@@ -1,23 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { useAppDispatch, useAppSelector } from '@/store/store';
-import { addTask } from '@/store/slices/tasksSlice';
+import { useCreateTask } from '@/hooks/useTasks';
 import TaskForm from '@/components/tasks/TaskForm';
 import type { TaskFormValues } from '@/components/tasks/TaskForm';
 
 const CreateTaskPage: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+  const { mutate: createTask, isPending } = useCreateTask();
 
   const onSubmit = (data: TaskFormValues) => {
-    dispatch(
-      addTask({
-        ...data,
-        createdBy: user?.email || 'guest@example.com',
-      })
-    );
-    navigate('/tasks');
+    createTask(data, {
+      onSuccess: () => {
+        navigate('/tasks');
+      },
+    });
   };
 
   return (
@@ -32,7 +28,7 @@ const CreateTaskPage: React.FC = () => {
 
         <TaskForm
           onSubmit={onSubmit}
-          isSubmitting={false}
+          isSubmitting={isPending}
           buttonLabel="Create Task"
           onCancel={() => navigate('/tasks')}
         />

@@ -1,32 +1,37 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { useAppDispatch, useAppSelector } from '@/store/store';
-import { updateTask } from '@/store/slices/tasksSlice';
+import { useTasks, useUpdateTask } from '@/hooks/useTasks';
 import TaskForm from '@/components/tasks/TaskForm';
 import type { TaskFormValues } from '@/components/tasks/TaskForm';
 
 const EditTaskPage: React.FC = () => {
   const { taskId } = useParams<{ taskId: string }>();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { data: tasks = [], isLoading } = useTasks();
+  const { mutate: updateTask, isPending } = useUpdateTask();
 
-  const task = useAppSelector((state) =>
-    state.tasks.items.find((t) => t.id === taskId)
-  );
+  const task = tasks.find((t) => t.id === taskId);
 
   const onSubmit = (data: TaskFormValues) => {
     if (task) {
-      dispatch(
-        updateTask({
-          ...data,
-          id: task.id,
-          createdBy: task.createdBy,
-          createdAt: task.createdAt,
-        })
+      updateTask(
+        { id: task.id, data },
+        {
+          onSuccess: () => {
+            navigate('/tasks');
+          },
+        }
       );
-      navigate('/tasks');
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 flex justify-center items-center min-h-[300px]">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600/30 border-t-indigo-600" />
+      </div>
+    );
+  }
 
   if (!task) {
     return (
@@ -63,7 +68,7 @@ const EditTaskPage: React.FC = () => {
             status: task.status,
             dueDate: task.dueDate || '',
           }}
-          isSubmitting={false}
+          isSubmitting={isPending}
           buttonLabel="Save Changes"
           onCancel={() => navigate('/tasks')}
         />
