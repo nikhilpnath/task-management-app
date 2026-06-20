@@ -100,6 +100,30 @@ You can run this project either using **Docker Compose** (recommended) or by run
 
 ---
 
+## 🗄️ Database Seeding
+
+To populate your database with test users and sample tasks, you can run the built-in database seed script.
+
+### Seed Data Details
+The seed script will clear the existing database and seed the following:
+*   **Test User** (password is `password123` ):
+    *   `testing@gmail.com`
+*   **Sample Tasks:** 4 mock tasks distributed between the seeded users, featuring low/medium/high priorities and todo/in-progress/done statuses.
+
+### How to Run the Seed Script
+
+*   **If running with Docker Compose:**
+    ```bash
+    docker compose exec server npm run db:seed
+    ```
+*   **If running locally (without Docker):**
+    ```bash
+    cd server
+    npm run db:seed
+    ```
+
+---
+
 ## 🔑 Environment Variables
 
 ### Server (`server/.env`)
