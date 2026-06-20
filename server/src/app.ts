@@ -9,6 +9,8 @@ import { CorsOptions } from 'cors';
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Security Middleware
 app.use(helmet());
 app.disable('x-powered-by');
