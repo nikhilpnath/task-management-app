@@ -148,9 +148,27 @@ All task requests require authentication. User context is automatically resolved
 
 ## 🎨 User Interface & Screenshots
 
-### Sign In Screen
+### 1. Sign In Screen
 FlowBoard features a premium dark/light mode auth portal to secure your tasks.
 
+<img width="100%" alt="signin" src="https://github.com/user-attachments/assets/cbe9d761-0241-41f9-81d7-f850dc6a73ca" />
+
+### 2. Kanban Task Dashboard
+Manage your projects visually using our dynamic task cards.
+
+<img width="100%" alt="dashboard" src="https://github.com/user-attachments/assets/b702c8bf-d04f-4dbb-97bf-c50c02708707" />
+
+### 3. Tasks List View
+An alternative, clean tasks view listing task details.
+
+<img width="100%" alt="tasks" src="https://github.com/user-attachments/assets/8e67d881-6687-403f-a6a7-43a19dc986ca" />
+
+### 4. Create / Edit Task Modal
+Quickly create and update your tasks with fields for title, description, priority, status, and due date.
+
+<img width="100%" alt="createTask" src="https://github.com/user-attachments/assets/bfe3af75-a8c4-4d55-ba5a-a5f679d1693f" />
+
+---
 
 
 ### Key Features visible in UI:
