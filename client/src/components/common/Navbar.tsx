@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
           <div className="flex h-16 items-center justify-between relative">
             <div className="flex items-center gap-8">
               <Link to="/dashboard" className="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-indigo-900 dark:from-indigo-400 dark:to-indigo-200 bg-clip-text text-transparent">
-                Mayfair Worktops
+                FlowBoard
               </Link>
             </div>
 
@@ -110,7 +110,7 @@ const Navbar: React.FC = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-indigo-900 dark:from-indigo-400 dark:to-indigo-200 bg-clip-text text-transparent"
               >
-                Mayfair Worktops
+                FlowBoard
               </Link>
               <div className="flex items-center gap-2">
                 {/* Theme Toggle Button inside overlay */}

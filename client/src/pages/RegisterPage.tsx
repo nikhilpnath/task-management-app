@@ -10,7 +10,7 @@ const RegisterPage: React.FC = () => {
           <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-zinc-800 via-zinc-900 to-black dark:from-white dark:via-zinc-200 dark:to-zinc-400 bg-clip-text text-transparent">
             Create Account
           </h2>
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Join Mayfair Worktops Task Manager</p>
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Join FlowBoard Task Manager</p>
         </div>
 
         <RegisterForm />
