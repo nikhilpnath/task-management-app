@@ -86,25 +86,9 @@ const TasksPage: React.FC = () => {
 
   const progressPercent = userTasksCount > 0 ? Math.round((userCompletedCount / userTasksCount) * 100) : 0;
 
-  if (isLoading) {
-    return (
-      <div className="p-6 flex justify-center items-center min-h-[300px]">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600/30 border-t-indigo-600" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-6 text-center text-rose-500">
-        Error loading tasks: {error.message}
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 transition-colors duration-200">
-      {/* Page Header */}
+      {/* Page Header is always visible immediately */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 bg-clip-text text-transparent">
@@ -120,67 +104,89 @@ const TasksPage: React.FC = () => {
         </Link>
       </div>
 
-      {/* Progress Bar Header */}
-      {userTasksCount > 0 && (
-        <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 mb-6 transition-colors duration-200">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">My Project Progress</span>
-            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
-              {progressPercent}% Completed ({userCompletedCount}/{userTasksCount})
-            </span>
-          </div>
-          <div className="w-full h-2.5 bg-zinc-100 dark:bg-zinc-950 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800/80">
-            <div
-              className="h-full bg-indigo-600 rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
+      {error ? (
+        <div className="p-6 text-center text-rose-500">
+          Error loading tasks: {error.message}
         </div>
+      ) : isLoading ? (
+        /* Column Skeletons while waiting for backend */
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          {['To Do', 'In Progress', 'Done'].map((col) => (
+            <div key={col} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 p-4">
+              <h3 className="font-semibold mb-4 text-zinc-700 dark:text-zinc-300">{col}</h3>
+              <div className="space-y-3">
+                {[1, 2].map((i) => (
+                  <div key={i} className="h-24 rounded-xl bg-zinc-200/60 dark:bg-zinc-800/40 animate-pulse" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          {/* Progress Bar Header */}
+          {userTasksCount > 0 && (
+            <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 mb-6 transition-colors duration-200">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">My Project Progress</span>
+                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                  {progressPercent}% Completed ({userCompletedCount}/{userTasksCount})
+                </span>
+              </div>
+              <div className="w-full h-2.5 bg-zinc-100 dark:bg-zinc-950 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800/80">
+                <div
+                  className="h-full bg-indigo-600 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Filters and Sorting Control Bar */}
+          <TaskFilters
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            priorityFilter={priorityFilter}
+            setPriorityFilter={setPriorityFilter}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+          />
+
+          {/* Kanban Board Grid */}
+          <div className={`grid grid-cols-1 ${statusFilter === 'all' ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-6`}>
+            {(statusFilter === 'all' || statusFilter === 'todo') && (
+              <TaskList
+                title="To Do"
+                taskList={todoTasks}
+                columnColor="bg-zinc-500"
+                onEdit={(id) => navigate(`/tasks/${id}/edit`)}
+                onDeleteClick={openDeleteModal}
+                onStatusChange={handleStatusChange}
+              />
+            )}
+            {(statusFilter === 'all' || statusFilter === 'in-progress') && (
+              <TaskList
+                title="In Progress"
+                taskList={inProgressTasks}
+                columnColor="bg-indigo-500"
+                onEdit={(id) => navigate(`/tasks/${id}/edit`)}
+                onDeleteClick={openDeleteModal}
+                onStatusChange={handleStatusChange}
+              />
+            )}
+            {(statusFilter === 'all' || statusFilter === 'done') && (
+              <TaskList
+                title="Done"
+                taskList={doneTasks}
+                columnColor="bg-emerald-500"
+                onEdit={(id) => navigate(`/tasks/${id}/edit`)}
+                onDeleteClick={openDeleteModal}
+                onStatusChange={handleStatusChange}
+              />
+            )}
+          </div>
+        </>
       )}
-
-      {/* Filters and Sorting Control Bar */}
-      <TaskFilters
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        priorityFilter={priorityFilter}
-        setPriorityFilter={setPriorityFilter}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-      />
-
-      {/* Kanban Board Grid */}
-      <div className={`grid grid-cols-1 ${statusFilter === 'all' ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-6`}>
-        {(statusFilter === 'all' || statusFilter === 'todo') && (
-          <TaskList
-            title="To Do"
-            taskList={todoTasks}
-            columnColor="bg-zinc-500"
-            onEdit={(id) => navigate(`/tasks/${id}/edit`)}
-            onDeleteClick={openDeleteModal}
-            onStatusChange={handleStatusChange}
-          />
-        )}
-        {(statusFilter === 'all' || statusFilter === 'in-progress') && (
-          <TaskList
-            title="In Progress"
-            taskList={inProgressTasks}
-            columnColor="bg-indigo-500"
-            onEdit={(id) => navigate(`/tasks/${id}/edit`)}
-            onDeleteClick={openDeleteModal}
-            onStatusChange={handleStatusChange}
-          />
-        )}
-        {(statusFilter === 'all' || statusFilter === 'done') && (
-          <TaskList
-            title="Done"
-            taskList={doneTasks}
-            columnColor="bg-emerald-500"
-            onEdit={(id) => navigate(`/tasks/${id}/edit`)}
-            onDeleteClick={openDeleteModal}
-            onStatusChange={handleStatusChange}
-          />
-        )}
-      </div>
 
       {/* Custom Confirmation Modal */}
       <DeleteTaskDialog

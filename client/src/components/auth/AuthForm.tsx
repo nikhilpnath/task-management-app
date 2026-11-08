@@ -2,6 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import ColdStartAlert from '@/components/common/ColdStartAlert';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required').pipe(z.email({ error: 'Invalid email address' })),
@@ -96,6 +97,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
       >
         {isSubmitting ? submittingLabel : submitLabel}
       </button>
+      <ColdStartAlert isLoading={isSubmitting} />
     </form>
   );
 };

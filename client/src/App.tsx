@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { RouterProvider } from "react-router";
 import { Provider } from "react-redux";
-import { store, useAppDispatch } from "./store/store";
+import { store, useAppDispatch, useAppSelector } from "./store/store";
 import { router } from "./routes/Routes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { login, logout } from "./store/slices/authSlice";
 import { apiFetch } from "./api/client";
 import ErrorBoundary from "./components/common/ErrorBoundary";
-
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,30 +19,26 @@ const queryClient = new QueryClient({
 
 const AuthInit: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
+    // Only verify with backend if the user is marked as authenticated
+    if (!isAuthenticated) return;
+
     const checkAuth = async () => {
       try {
         const data = await apiFetch('/auth/me');
         dispatch(login({ user: data.user }));
-      } catch (err) {
-        dispatch(logout());
-      } finally {
-        setLoading(false);
+      } catch (err: any) {
+        if (err?.status === 401) {
+          dispatch(logout());
+        }
       }
     };
     checkAuth();
-  }, [dispatch]);
+  }, [dispatch, isAuthenticated]);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600/30 border-t-indigo-600" />
-      </div>
-    );
-  }
-
+  // Render children immediately without blocking!
   return <>{children}</>;
 };
 
