@@ -12,6 +12,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false, // Disable default refetching on window focus
+      staleTime: 1000 * 60 * 2, // 2 minutes: instant tab switching from cache
       retry: 1,
     },
   },
