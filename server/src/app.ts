@@ -30,6 +30,14 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Health check endpoints for wakeup ping and uptime monitors
+app.get('/health', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+app.get('/api/health', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // Mount all API routes
 app.use('/api', apiRoutes);
 
