@@ -2,15 +2,21 @@ import { Request, Response, NextFunction } from 'express';
 import * as authService from '../services/authService';
 import { createError } from '../utils/errors';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+};
+
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await authService.registerUser(req.body);
     
     // Set HttpOnly cookie
     res.cookie('token', result.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      ...cookieOptions,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
@@ -26,9 +32,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     
     // Set HttpOnly cookie
     res.cookie('token', result.token, {
-      httpOnly: true,
-      secure: true,
-      sameSite:'none',
+      ...cookieOptions,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
@@ -51,11 +55,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
 
 export const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.clearCookie('token', {
-      httpOnly: true,
-      secure:true,
-      sameSite:'none',
-    });
+    res.clearCookie('token', cookieOptions);
     res.json({ message: 'Logged out successfully' });
   } catch (error) {
     next(error);
