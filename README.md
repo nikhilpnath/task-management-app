@@ -1,6 +1,6 @@
 # FlowBoard — Task Management Application
 
-FlowBoard is a modern, responsive, collaborative task management application designed to organize, track, and streamline daily workflows. Built with a robust React client and an Express backend, it supports full user authentication, task filtering, sorting, and live state updates.
+FlowBoard is a modern, responsive, collaborative task management application designed to organize, track, and streamline daily workflows. Built with a robust React client and an Express backend, it supports full user authentication, task filtering, sorting, live state updates, and smart cloud cold-start resilience.
 
 ---
 
@@ -8,10 +8,10 @@ FlowBoard is a modern, responsive, collaborative task management application des
 
 ### Frontend (Client)
 *   **React 19 & TypeScript:** Component-based UI with compile-time type safety.
-*   **TanStack Query (React Query v5):** Asynchronous state management, server-state caching, and query synchronization.
+*   **TanStack Query (React Query v5):** Asynchronous state management, server-state caching (`staleTime` optimization), and query synchronization.
 *   **Redux Toolkit & React Redux:** Centralized global client-side state management (auth state, UI preferences).
-*   **TailwindCSS v4:** Utility-first styling framework.
-*   **React Router v8:** Declarative client-side routing.
+*   **TailwindCSS v4:** Utility-first styling framework with class-based dark/light theme support.
+*   **React Router v8:** Declarative client-side routing with non-blocking initialization.
 *   **React Hook Form:** High-performance form state management.
 *   **Zod:** TypeScript-first schema validation for forms and API requests.
 *   **Vite:** High-speed development bundler and dev server.
@@ -20,9 +20,9 @@ FlowBoard is a modern, responsive, collaborative task management application des
 *   **Node.js & Express:** Lightweight, flexible RESTful API server.
 *   **TypeScript:** Type safety and code sharing consistency.
 *   **MongoDB & Mongoose:** NoSQL document database and Object Data Modeling (ODM).
-*   **JSON Web Tokens (JWT):** Session tokens signed on backend and stored securely.
+*   **JSON Web Tokens (JWT):** Session tokens signed on backend and stored securely in HttpOnly cookies.
 *   **bcryptjs:** Secure hashing library for user password cryptography.
-*   **Cookie Parser:** Middleware to securely read auth token cookies.
+*   **Cookie Parser:** Middleware to securely read auth token cookies with adaptive environment flags.
 *   **Helmet:** HTTP headers protection middleware to secure backend requests.
 *   **CORS:** Middleware configuring safe Cross-Origin Resource Sharing.
 *   **Express Rate Limit:** Middleware limiting rapid repeated API hits (e.g., auth throttling).
@@ -141,12 +141,23 @@ The seed script will clear the existing database and seed the following:
 | Variable | Description | Example Value |
 | :--- | :--- | :--- |
 | `VITE_API_URL` | The absolute base URL of the backend API | `http://localhost:8000/api` |
+| `VITE_COLD_START_DELAY_MS` | (Optional) Milliseconds to wait before showing cold-start notice | `3000` |
+| `VITE_COLD_START_MESSAGE` | (Optional) Custom message displayed while backend is waking up | `Starting up server, this may take a moment on first load...` |
 
 ---
 
 ## 📡 API Endpoint Documentation
 
-All backend API paths are prefixed with `/api`. All task endpoints require a valid session (managed via `token` cookies).
+All backend API paths are prefixed with `/api` (except the root `/health`). All task endpoints require a valid session (managed via HttpOnly `token` cookies).
+
+### Health Check Endpoints
+
+Public, zero-overhead routes used for the frontend's silent wake-up ping and external uptime monitors (e.g., UptimeRobot, cron-job.org).
+
+| Method | Endpoint | Description | Request Body | Response (200 OK) |
+| :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/health` | Root health check for external uptime pingers. | *None* | `{ "status": "ok" }` |
+| **GET** | `/api/health` | API-scoped health check for frontend background ping. | *None* | `{ "status": "ok" }` |
 
 ### Authentication Endpoints (`/api/auth`)
 
@@ -194,9 +205,12 @@ Quickly create and update your tasks with fields for title, description, priorit
 
 ---
 
-
-### Key Features visible in UI:
-*   **Authentication Portal:** Modern validation on login and sign up inputs.
+### ⚡ Key Features & Performance Optimizations:
+*   **Instant Initial Load & Non-Blocking Auth:** Page shell and login view render instantly (0ms) without waiting on cold backend responses.
+*   **Smart Cloud Cold-Start Handling:** Background `/health` ping on page load wakes up sleeping cloud containers (e.g., Render free tier) early; smooth pulsing skeletons and persistent notice alerts keep users informed with zero jarring layout shifts.
+*   **Optimized React Query Caching:** In-memory caching (`staleTime: 2m`) provides instantaneous tab switching between Dashboard and Task Board without redundant network refetches.
+*   **Authentication Portal:** Secure HttpOnly cookie sessions with adaptive environment flags (`SameSite=None;Secure` in production, `SameSite=Lax` in development/Docker).
 *   **Kanban Task Dashboard:** Categorizes tasks dynamically into "To Do", "In Progress", and "Done" columns.
-*   **Task Modals:** Easy creation and updates for titles, descriptions, due dates, statuses, and priority flags (Low, Medium, High).
-*   **Micro-interactions & Responsive Layouts:** Optimized for all desktop and mobile screen sizes.
+*   **Custom Task Management:** Easy creation and updates for titles, descriptions, due dates, statuses, and priority flags (Low, Medium, High).
+*   **Flicker-Free Theme Toggle:** Clean dark & light mode state initialization avoiding visual flashes or cascading renders.
+*   **Responsive Layouts:** Optimized for all desktop, tablet, and mobile screens.
