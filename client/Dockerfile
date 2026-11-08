@@ -1,5 +1,8 @@
 FROM node:24-alpine
 
+#Apply security patches
+RUN apk update && apk upgrade --no-cache
+
 WORKDIR /frontend
 
 COPY package*.json ./
