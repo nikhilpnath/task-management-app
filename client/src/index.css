@@ -3,13 +3,123 @@
 /* Define class-based dark variant for Tailwind v4 */
 @custom-variant dark (&:where(.dark, .dark *));
 
-body {
-  @apply bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 transition-colors duration-200;
+:root {
+  /* Canvas & Surfaces (Light - Clean Architectural Porcelain) */
+  --canvas: #f8fafc;
+  --surface-1: #ffffff;
+  --surface-2: #f1f5f9;
+  --surface-3: #ffffff;
+  
+  /* Borders (Light) */
+  --border-subtle: #e2e8f0;
+  --border-prominent: #cbd5e1;
+  --border-focus: #4f46e5;
+
+  /* Typography (Light) */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+
+  /* Brand / Primary Accent (Light) */
+  --brand-primary: #4f46e5;
+  --brand-hover: #4338ca;
+  --brand-surface: #eef2ff;
+  --brand-border: #c7d2fe;
+
+  /* Feedback Semantics (Light) */
+  --color-success: #059669;
+  --color-success-surface: #ecfdf5;
+  --color-success-border: #a7f3d0;
+  --color-warning: #d97706;
+  --color-warning-surface: #fffbeb;
+  --color-warning-border: #fde68a;
+  --color-danger: #e11d48;
+  --color-danger-surface: #fff1f2;
+  --color-danger-border: #fecdd3;
+  --color-info: #0284c7;
+  --color-info-surface: #f0f9ff;
+  --color-info-border: #bae6fd;
 }
 
-/* Make browser calendar picker icon visible in dark mode, normal in light mode */
+.dark {
+  /* Canvas & Surfaces (Dark - Deep Obsidian Slate-950) */
+  --canvas: #090d16;
+  --surface-1: #0f172a;
+  --surface-2: #1e293b;
+  --surface-3: #1e293b;
+
+  /* Borders (Dark) */
+  --border-subtle: #1e293b;
+  --border-prominent: #334155;
+  --border-focus: #6366f1;
+
+  /* Typography (Dark) */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+
+  /* Brand / Primary Accent (Dark) */
+  --brand-primary: #6366f1;
+  --brand-hover: #818cf8;
+  --brand-surface: rgba(99, 102, 241, 0.12);
+  --brand-border: rgba(99, 102, 241, 0.25);
+
+  /* Feedback Semantics (Dark) */
+  --color-success: #34d399;
+  --color-success-surface: rgba(16, 185, 129, 0.12);
+  --color-success-border: rgba(16, 185, 129, 0.25);
+  --color-warning: #fbbf24;
+  --color-warning-surface: rgba(245, 158, 11, 0.12);
+  --color-warning-border: rgba(245, 158, 11, 0.25);
+  --color-danger: #fb7185;
+  --color-danger-surface: rgba(244, 63, 94, 0.12);
+  --color-danger-border: rgba(244, 63, 94, 0.25);
+  --color-info: #38bdf8;
+  --color-info-surface: rgba(14, 165, 233, 0.12);
+  --color-info-border: rgba(14, 165, 233, 0.25);
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--text-primary);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 150ms ease, color 150ms ease;
+  min-height: 100vh;
+}
+
+/* Tabular figures for numbers, counters, dates */
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom Scrollbar for dense task board lists */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Date picker cross-browser calendar indicator */
 .dark input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
+  filter: invert(0.85);
+  cursor: pointer;
 }
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;

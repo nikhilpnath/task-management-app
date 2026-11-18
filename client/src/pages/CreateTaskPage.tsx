@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useCreateTask } from '@/hooks/useTasks';
 import TaskForm from '@/components/tasks/TaskForm';
 import type { TaskFormValues } from '@/components/tasks/TaskForm';
@@ -17,13 +17,26 @@ const CreateTaskPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 flex justify-center items-center">
-      <div className="w-full max-w-2xl rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-8 backdrop-blur-xl transition-colors duration-200">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 bg-clip-text text-transparent">
+    <div className="max-w-2xl mx-auto py-4">
+      {/* Breadcrumb Navigation */}
+      <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+        <Link to="/tasks" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+          Tasks
+        </Link>
+        <span aria-hidden="true">/</span>
+        <span className="font-semibold text-slate-900 dark:text-white" aria-current="page">
+          New Task
+        </span>
+      </nav>
+
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-xs transition-colors duration-150">
+        <header className="mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             Create New Task
           </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-2">Fill in the information to publish a new task to your board.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Fill in the parameters below to publish a new task to your team board.
+          </p>
         </header>
 
         <TaskForm

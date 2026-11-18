@@ -18,46 +18,71 @@ const StatusOverview: React.FC<StatusOverviewProps> = ({
   completedPercent,
 }) => {
   return (
-    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-6 backdrop-blur-xl space-y-6 transition-colors duration-200">
-      <h2 className="text-xl font-bold text-zinc-800 dark:text-zinc-100">Status Grouping</h2>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xs space-y-6 transition-colors duration-150">
+      <div className="flex items-center justify-between">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Status Breakdown
+        </h2>
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+          {todoCount + inProgressCount + completedCount} Total
+        </span>
+      </div>
 
       <div className="space-y-4">
-        {/* To Do Progress */}
-        <div>
-          <div className="flex justify-between items-center text-xs font-semibold mb-1">
-            <span className="text-zinc-500 dark:text-zinc-400">To Do</span>
-            <span className="text-zinc-600 dark:text-zinc-300">
-              {todoCount} Tasks ({todoPercent})
+        {/* Completed Progress */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center text-xs font-medium">
+            <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" aria-hidden="true" />
+              Completed
+            </span>
+            <span className="text-slate-600 dark:text-slate-400 font-tabular font-medium">
+              {completedCount} tasks ({completedPercent}%)
             </span>
           </div>
-          <div className="w-full h-2 bg-zinc-100 dark:bg-zinc-950 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800/80">
-            <div className="h-full bg-zinc-400 dark:bg-zinc-500 rounded-full" style={{ width: `${todoPercent}%` }} />
+          <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-emerald-500 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${completedPercent}%` }}
+            />
           </div>
         </div>
 
         {/* In Progress Progress */}
-        <div>
-          <div className="flex justify-between items-center text-xs font-semibold mb-1">
-            <span className="text-zinc-500 dark:text-zinc-400 font-medium text-indigo-600 dark:text-indigo-400">In Progress</span>
-            <span className="text-indigo-600 dark:text-indigo-400">
-              {inProgressCount} Tasks ({inProgressPercent})
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center text-xs font-medium">
+            <span className="text-indigo-700 dark:text-indigo-400 font-semibold flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-indigo-500" aria-hidden="true" />
+              In Progress
+            </span>
+            <span className="text-slate-600 dark:text-slate-400 font-tabular font-medium">
+              {inProgressCount} tasks ({inProgressPercent}%)
             </span>
           </div>
-          <div className="w-full h-2 bg-zinc-100 dark:bg-zinc-950 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800/80">
-            <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${inProgressPercent}%` }} />
+          <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-indigo-500 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${inProgressPercent}%` }}
+            />
           </div>
         </div>
 
-        {/* Completed Progress */}
-        <div>
-          <div className="flex justify-between items-center text-xs font-semibold mb-1">
-            <span className="text-zinc-500 dark:text-zinc-400 font-medium text-emerald-600 dark:text-emerald-400">Completed</span>
-            <span className="text-emerald-600 dark:text-emerald-400">
-              {completedCount} Tasks ({completedPercent})
+        {/* To Do Progress */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center text-xs font-medium">
+            <span className="text-slate-700 dark:text-slate-300 font-semibold flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500" aria-hidden="true" />
+              To Do
+            </span>
+            <span className="text-slate-600 dark:text-slate-400 font-tabular font-medium">
+              {todoCount} tasks ({todoPercent}%)
             </span>
           </div>
-          <div className="w-full h-2 bg-zinc-100 dark:bg-zinc-950 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800/80">
-            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${completedPercent}%` }} />
+          <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-slate-400 dark:bg-slate-500 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${todoPercent}%` }}
+            />
           </div>
         </div>
       </div>

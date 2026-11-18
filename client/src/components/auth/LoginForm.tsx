@@ -28,16 +28,23 @@ const LoginForm: React.FC = () => {
         })
       );
       navigate('/dashboard');
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Invalid email or password.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : (err as { message?: string })?.message || 'Invalid email or password.';
+      setErrorMsg(message);
     }
   };
 
   return (
     <div className="space-y-4">
       {errorMsg && (
-        <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm">
-          {errorMsg}
+        <div
+          role="alert"
+          className="p-3 rounded-md bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-sm flex items-center gap-2.5"
+        >
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>{errorMsg}</span>
         </div>
       )}
       <AuthForm
